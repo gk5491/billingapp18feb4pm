@@ -644,7 +644,7 @@ export const createFlowRouter = (db: any) => {
 
             // If requestType is sales_order or both, create a draft sales order
             if (requestType === 'sales_order' || requestType === 'both') {
-                const salesOrdersData = readSalesOrdersData();
+                const salesOrdersData = db.readSalesOrdersData();
                 const nextSONumber = salesOrdersData.nextSalesOrderNumber || 1001;
                 
                 const newSO = {
@@ -674,11 +674,12 @@ export const createFlowRouter = (db: any) => {
 
                 salesOrdersData.salesOrders.unshift(newSO);
                 salesOrdersData.nextSalesOrderNumber = nextSONumber + 1;
-                writeSalesOrdersData(salesOrdersData);
+                db.writeSalesOrdersData(salesOrdersData);
             }
 
             // If requestType is quote or both, create a draft quote
             if (requestType === 'quote' || requestType === 'both') {
+                const quotesData = db.readQuotesData();
                 const quoteId = String(quotesData.nextQuoteNumber++);
                 const newQuote = {
                     id: quoteId,
@@ -700,7 +701,7 @@ export const createFlowRouter = (db: any) => {
                     createdAt: new Date().toISOString()
                 };
                 quotesData.quotes.push(newQuote);
-                writeQuotesData(quotesData);
+                db.writeQuotesData(quotesData);
             }
 
             res.json({ success: true, message: "Item request submitted successfully", data: newRequest });

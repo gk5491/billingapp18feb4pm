@@ -497,9 +497,9 @@ function SalesOrderDetailPanel({ order, branding, organization, onClose, onEdit,
           <Pencil className="h-3.5 w-3.5" />
           Edit
         </Button>
-        <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-slate-600 hover:text-sidebar hover:bg-sidebar/5 font-bold font-display" onClick={handleSendToCustomer} data-testid="button-send-customer">
+        <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-sidebar font-bold font-display hover:bg-sidebar/5" onClick={handleSendToCustomer} data-testid="button-send-customer" disabled={order.orderStatus !== 'Draft'}>
           <Send className="h-3.5 w-3.5" />
-          Send to Customer
+          {order.orderStatus === 'Draft' ? 'Send to Customer' : 'Sent'}
         </Button>
         <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-slate-600 hover:text-sidebar hover:bg-sidebar/5 font-bold font-display" onClick={handleDownloadPDF} data-testid="button-download">
           <Download className="h-3.5 w-3.5" />
@@ -517,13 +517,38 @@ function SalesOrderDetailPanel({ order, branding, organization, onClose, onEdit,
               size="sm"
               className="h-8 gap-1.5 text-sidebar font-bold font-display hover:bg-sidebar/5 disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="button-convert-invoice"
-              disabled={order.invoiceStatus === 'Invoiced' || order.orderStatus === 'CLOSED'}
+              disabled={order.invoiceStatus === 'Invoiced' || order.orderStatus !== 'Approved'}
             >
               <Receipt className="h-3.5 w-3.5" />
-              {order.invoiceStatus === 'Invoiced' || order.orderStatus === 'CLOSED' ? 'Invoiced' : 'Convert to Invoice'}
+              {order.invoiceStatus === 'Invoiced' ? 'Invoiced' : 'Convert to Invoice'}
               <ChevronDown className="h-3.5 w-3.5 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 font-display">
+            <DropdownMenuItem 
+              onClick={async () => {
+                try {
+                  const response = await fetch(`/api/sales-orders/${order.id}/generate-invoice`, {
+                    method: "POST"
+                  });
+                  const result = await response.json();
+                  if (result.success) {
+                    toast({ title: "Success", description: "Invoice generated and sent to customer" });
+                    onEdit(); // Refresh
+                  } else {
+                    throw new Error(result.message);
+                  }
+                } catch (error: any) {
+                  toast({ title: "Error", description: error.message, variant: "destructive" });
+                }
+              }}
+              className="gap-2 font-medium"
+            >
+              <FileText className="h-4 w-4" />
+              Generate & Send Invoice
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
           <DropdownMenuContent align="start" className="w-56 font-display">
             <DropdownMenuItem
               onClick={onConvertToInvoice}
