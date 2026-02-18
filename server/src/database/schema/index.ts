@@ -56,6 +56,7 @@ export const invoices = pgTable('invoices', {
   invoiceDate: timestamp('invoice_date').notNull(),
   dueDate: timestamp('due_date').notNull(),
   status: varchar('status', { length: 50 }).notNull().default('draft'),
+  paymentStatus: varchar('payment_status', { length: 50 }).notNull().default('Unpaid'),
   subtotal: numeric('subtotal', { precision: 18, scale: 2 }).notNull().default('0'),
   discountTotal: numeric('discount_total', { precision: 18, scale: 2 }).notNull().default('0'),
   taxTotal: numeric('tax_total', { precision: 18, scale: 2 }).notNull().default('0'),
