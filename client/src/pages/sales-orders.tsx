@@ -547,9 +547,7 @@ function SalesOrderDetailPanel({ order, branding, organization, onClose, onEdit,
               <FileText className="h-4 w-4" />
               Generate & Send Invoice
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-          <DropdownMenuContent align="start" className="w-56 font-display">
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={onConvertToInvoice}
               className="font-medium"
