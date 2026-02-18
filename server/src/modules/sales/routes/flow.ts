@@ -327,12 +327,79 @@ export const createFlowRouter = (db: any) => {
 
             if (orderIndex === -1) return res.status(404).json({ success: false, message: "Sales order not found" });
 
+            const order = salesOrdersData.salesOrders[orderIndex];
+            
+            // Only allow action if status is 'Sent'
+            if (order.orderStatus !== 'Sent') {
+                return res.status(400).json({ success: false, message: "Sales order must be in 'Sent' status to approve or reject" });
+            }
+
             salesOrdersData.salesOrders[orderIndex].orderStatus = action === 'approve' ? 'Approved' : 'Rejected';
             db.writeSalesOrdersData(salesOrdersData);
 
-            res.json({ success: true, message: `Sales order ${action}d successfully` });
+            res.json({ success: true, message: `Sales order ${action === 'approve' ? 'approved' : 'rejected'} successfully` });
         } catch (error) {
             res.status(500).json({ success: false, message: "Failed to update sales order" });
+        }
+    });
+
+    // Admin Send Sales Order to Customer
+    flowRouter.post('/sales-orders/:id/send', authenticate, requireRole(UserRole.ADMIN, UserRole.SUPER_ADMIN), async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const { id } = req.params;
+            const salesOrdersData = db.readSalesOrdersData();
+            const orderIndex = salesOrdersData.salesOrders.findIndex((so: any) => so.id === id);
+
+            if (orderIndex === -1) return res.status(404).json({ success: false, message: "Sales order not found" });
+
+            salesOrdersData.salesOrders[orderIndex].orderStatus = 'Sent';
+            db.writeSalesOrdersData(salesOrdersData);
+
+            res.json({ success: true, message: "Sales order sent to customer successfully" });
+        } catch (error) {
+            res.status(500).json({ success: false, message: "Failed to send sales order" });
+        }
+    });
+
+    // Admin Generate Invoice from Sales Order
+    flowRouter.post('/sales-orders/:id/generate-invoice', authenticate, requireRole(UserRole.ADMIN, UserRole.SUPER_ADMIN), async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const { id } = req.params;
+            const salesOrdersData = db.readSalesOrdersData();
+            const invoicesData = db.readInvoicesData();
+            const order = salesOrdersData.salesOrders.find((so: any) => so.id === id);
+
+            if (!order) return res.status(404).json({ success: false, message: "Sales order not found" });
+            if (order.orderStatus !== 'Approved') return res.status(400).json({ success: false, message: "Sales order must be Approved to generate invoice" });
+
+            const invoiceId = Date.now().toString();
+            const newInvoice = {
+                id: invoiceId,
+                invoiceNumber: `INV-${invoicesData.nextInvoiceNumber || 1001}`,
+                salesOrderId: order.id,
+                customerId: order.customerId,
+                customerName: order.customerName,
+                date: new Date().toISOString(),
+                dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+                status: 'Sent',
+                items: order.items,
+                subTotal: order.subTotal,
+                total: order.total,
+                balanceDue: order.total,
+                amountPaid: 0,
+                createdAt: new Date().toISOString()
+            };
+
+            invoicesData.invoices.unshift(newInvoice);
+            invoicesData.nextInvoiceNumber = (invoicesData.nextInvoiceNumber || 1001) + 1;
+            db.writeInvoicesData(invoicesData);
+
+            order.invoiceStatus = 'Invoiced';
+            db.writeSalesOrdersData(salesOrdersData);
+
+            res.json({ success: true, message: "Invoice generated and sent to customer", data: newInvoice });
+        } catch (error) {
+            res.status(500).json({ success: false, message: "Failed to generate invoice" });
         }
     });
 
