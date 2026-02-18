@@ -1,0 +1,87 @@
+{
+  "receipts": [
+    {
+      "paymentId": "1771394504451",
+      "customerId": "1",
+      "paymentNumber": "PAY-98",
+      "amount": "460",
+      "date": "2026-02-18T06:01:44.451Z",
+      "status": "received",
+      "pdfUrl": null,
+      "id": "0c23b5b5-c6e0-4135-855f-3365c3f8eab6",
+      "createdAt": "2026-02-18T06:02:15.226Z"
+    },
+    {
+      "paymentId": "1771395631540",
+      "customerId": "2",
+      "paymentNumber": "PAY-99",
+      "invoiceNumber": "INV-00020",
+      "amount": "20000",
+      "date": "2026-02-18T06:20:31.540Z",
+      "status": "received",
+      "pdfUrl": null,
+      "id": "9f944210-a6f8-451d-825e-ded0b8d5175c",
+      "createdAt": "2026-02-18T06:21:07.959Z"
+    },
+    {
+      "paymentId": "1771395631540",
+      "customerId": "2",
+      "paymentNumber": "PAY-99",
+      "invoiceNumber": "INV-00020",
+      "amount": "20000",
+      "date": "2026-02-18T06:20:31.540Z",
+      "status": "received",
+      "pdfUrl": null,
+      "id": "326b58c0-e40d-451d-82c9-06bcab8c331a",
+      "createdAt": "2026-02-18T06:21:08.005Z"
+    },
+    {
+      "paymentId": "1771395631540",
+      "customerId": "2",
+      "paymentNumber": "PAY-99",
+      "invoiceNumber": "INV-00020",
+      "amount": "20000",
+      "date": "2026-02-18T06:20:31.540Z",
+      "status": "received",
+      "pdfUrl": null,
+      "id": "ca33fc4d-c78a-4f59-84ae-ee3c050936c5",
+      "createdAt": "2026-02-18T07:15:33.534Z"
+    },
+    {
+      "paymentId": "1771390846451",
+      "customerId": "1",
+      "paymentNumber": "PAY-95",
+      "invoiceNumber": "INV-00019",
+      "amount": "1000",
+      "date": "2026-02-18T05:00:46.451Z",
+      "status": "received",
+      "pdfUrl": null,
+      "id": "4f0de361-1db0-4df5-898f-b60ed46d22ea",
+      "createdAt": "2026-02-18T07:17:57.260Z"
+    },
+    {
+      "paymentId": "1771390846451",
+      "customerId": "1",
+      "paymentNumber": "PAY-95",
+      "invoiceNumber": "INV-00019",
+      "amount": "1000",
+      "date": "2026-02-18T05:00:46.451Z",
+      "status": "received",
+      "pdfUrl": null,
+      "id": "ae18ac23-00f7-479c-ada4-5417caa421f6",
+      "createdAt": "2026-02-18T07:17:57.370Z"
+    },
+    {
+      "paymentId": "1771404481097",
+      "customerId": "1",
+      "paymentNumber": "PAY-100",
+      "invoiceNumber": "INV-00019",
+      "amount": "700",
+      "date": "2026-02-18T08:48:01.097Z",
+      "status": "received",
+      "pdfUrl": null,
+      "id": "0ebf2909-43fb-4e9d-862e-cd04089ab803",
+      "createdAt": "2026-02-18T08:48:29.845Z"
+    }
+  ]
+}
