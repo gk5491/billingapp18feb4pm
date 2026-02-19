@@ -6647,26 +6647,22 @@ export async function registerRoutes(
           const invoiceIndex = invoicesData.invoices.findIndex((inv: any) => inv.id === paymentInvoice.invoiceId);
           if (invoiceIndex !== -1) {
             const invoice = invoicesData.invoices[invoiceIndex];
+            const paymentAmount = Number(paymentInvoice.paymentAmount || 0);
             
-            // If payment is already marked as PAID in request, we can reduce balance now
-            // But usually we wait for verification for "Record Payment" from customer side
-            // For admin "Record Payment", it's usually immediate.
-            // Based on user request, it should reflect after verification from admin.
-            
-            const isVerified = req.body.status === 'Verified' || req.body.status === 'PAID';
-            
-            if (isVerified) {
-              const currentBalance = invoice.balanceDue || invoice.total || 0;
-              const newBalance = Math.max(0, currentBalance - (paymentInvoice.paymentAmount || 0));
+            // For customer side "Record Payment", we update balance and status immediately
+            // to reflect the "Partially Paid" or "Paid" state as requested.
+            const currentTotal = Number(invoice.total || 0);
+            const currentPaid = Number(invoice.amountPaid || 0);
+            const newAmountPaid = currentPaid + paymentAmount;
+            const newBalanceDue = Math.max(0, currentTotal - newAmountPaid);
 
-              invoicesData.invoices[invoiceIndex] = {
-                ...invoice,
-                balanceDue: newBalance,
-                amountPaid: (invoice.amountPaid || 0) + (paymentInvoice.paymentAmount || 0),
-                status: newBalance === 0 ? 'PAID' : newBalance < (invoice.total || 0) ? 'PARTIALLY_PAID' : invoice.status,
-                updatedAt: now
-              };
-            }
+            invoicesData.invoices[invoiceIndex] = {
+              ...invoice,
+              balanceDue: newBalanceDue,
+              amountPaid: newAmountPaid,
+              status: newBalanceDue <= 0 ? 'Paid' : 'Partially Paid',
+              updatedAt: now
+            };
 
             // Add payment record to invoice
             if (!invoice.payments) {
@@ -6675,7 +6671,7 @@ export async function registerRoutes(
             invoicesData.invoices[invoiceIndex].payments.push({
               id: newPayment.id,
               date: paymentInvoice.paymentReceivedDate || req.body.date,
-              amount: paymentInvoice.paymentAmount,
+              amount: paymentAmount,
               paymentMode: req.body.mode || 'Cash',
               reference: req.body.referenceNumber || '',
               notes: req.body.notes || '',
