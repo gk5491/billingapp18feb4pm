@@ -6,3 +6,5 @@
 [x] 6. Fix customer invoice filtering logic
 [x] 7. Install missing dependencies and configure database for Replit environment
 [x] 8. Verify application starts and runs correctly
+[x] 9. Provision PostgreSQL database and push schema
+[x] 10. Configure workflow with webview output and verify app loads correctly
