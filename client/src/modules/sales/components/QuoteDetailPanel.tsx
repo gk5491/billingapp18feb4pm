@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
+import { useAuthStore } from "@/store/authStore";
 import { X, Edit, MoreHorizontal, Ban, ChevronDown, Send, Share2, FileText, RefreshCw, ExternalLink, Printer, Copy, Trash2, Download, Eye, Info } from "lucide-react";
 import { robustIframePrint } from "@/lib/robust-print";
 import { generatePDFFromElement } from "@/lib/pdf-utils";
@@ -175,6 +176,7 @@ const formatAddress = (address: any) => {
 
 export default function QuoteDetailPanel({ quote, onClose, onEdit, onRefresh, isAdmin = true }: QuoteDetailPanelProps) {
   const [, setLocation] = useLocation();
+  const { token } = useAuthStore();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("details");
   const [showPdfView, setShowPdfView] = useState(false);
@@ -292,8 +294,11 @@ export default function QuoteDetailPanel({ quote, onClose, onEdit, onRefresh, is
       // Step 2: Mark the quote as sent
       const response = await fetch(`/api/quotes/${quote.id}/send`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ updatedBy: 'Admin User' })
       });
 
       if (response.ok) {

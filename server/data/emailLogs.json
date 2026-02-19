@@ -91,6 +91,45 @@
       "recipient": "customer@example.com",
       "fromEmail": "ganesh.kale@cybaemtech.com",
       "sentAt": "2026-02-19T04:38:07.948Z"
+    },
+    {
+      "id": "gekw0rus3",
+      "customerId": "2",
+      "transactionId": "29",
+      "transactionType": "quote",
+      "type": "manual",
+      "status": "sent",
+      "subject": "Quote QT-000029 from our company",
+      "body": "Please find the attached quote QT-000029 for your review.",
+      "recipient": "customer@example.com",
+      "fromEmail": "billing@example.com",
+      "sentAt": "2026-02-19T04:55:02.813Z"
+    },
+    {
+      "id": "sff66ceeh",
+      "customerId": "2",
+      "transactionId": "29",
+      "transactionType": "quote",
+      "type": "manual",
+      "status": "sent",
+      "subject": "Quote QT-000029 from our company",
+      "body": "Please find the attached quote QT-000029 for your review.",
+      "recipient": "customer@example.com",
+      "fromEmail": "billing@example.com",
+      "sentAt": "2026-02-19T04:55:10.952Z"
+    },
+    {
+      "id": "v1xetb8ld",
+      "customerId": "2",
+      "transactionId": "29",
+      "transactionType": "quote",
+      "type": "manual",
+      "status": "sent",
+      "subject": "Quote QT-000029 from our company",
+      "body": "Please find the attached quote QT-000029 for your review.",
+      "recipient": "customer@example.com",
+      "fromEmail": "billing@example.com",
+      "sentAt": "2026-02-19T04:55:17.802Z"
     }
   ]
 }

@@ -213,6 +213,7 @@ interface SalesOrderDetailPanelProps {
 
 
 function SalesOrderDetailPanel({ order, branding, organization, onClose, onEdit, onDelete, onConvertToInvoice, onConvertSelectedItems }: SalesOrderDetailPanelProps & { branding?: any; organization?: any }) {
+  const { token } = useAuthStore();
   const [activeTab, setActiveTab] = useState("details");
   const [showPdfPreview, setShowPdfPreview] = useState(true);
   const { toast } = useToast();
@@ -235,7 +236,10 @@ function SalesOrderDetailPanel({ order, branding, organization, onClose, onEdit,
     try {
       const response = await fetch(`/api/flow/sales-orders/${order.id}/send`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
+        headers: { 
+          "Content-Type": "application/json", 
+          ...(token ? { "Authorization": `Bearer ${token}` } : {}) 
+        },
       });
       const result = await response.json();
       if (result.success) {
