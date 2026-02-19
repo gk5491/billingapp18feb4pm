@@ -292,8 +292,12 @@ export default function Invoices() {
         const normalizedStatus = (invoice.status || '').toUpperCase();
         const normalizedFilter = activeFilter.toUpperCase();
 
-        if (normalizedFilter === 'SENT' && (normalizedStatus === 'SENT' || normalizedStatus === 'PENDING' || normalizedStatus === 'OVERDUE' || normalizedStatus === 'PARTIALLY PAID')) {
+        if (normalizedFilter === 'SENT' && (normalizedStatus === 'SENT' || normalizedStatus === 'PENDING' || normalizedStatus === 'OVERDUE' || normalizedStatus === 'PARTIALLY_PAID' || normalizedStatus === 'PARTIALLY PAID')) {
             return matchesSearch;
+        }
+
+        if (normalizedFilter === 'PARTIALLY_PAID' || normalizedFilter === 'PARTIALLY PAID') {
+            return matchesSearch && (normalizedStatus === 'PARTIALLY_PAID' || normalizedStatus === 'PARTIALLY PAID');
         }
 
         return matchesSearch && normalizedStatus === normalizedFilter;

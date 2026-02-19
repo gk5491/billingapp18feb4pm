@@ -3211,14 +3211,16 @@ export async function registerRoutes(
       const unusedPaymentAmount = Math.max(0, paymentAmount - balanceDueBeforePayment);
 
       existingInvoice.payments.push(payment);
-      existingInvoice.amountPaid = (existingInvoice.amountPaid || 0) + actualPaymentApplied;
-      existingInvoice.balanceDue = Math.max(0, existingInvoice.total - existingInvoice.amountPaid);
+      existingInvoice.amountPaid = (Number(existingInvoice.amountPaid) || 0) + actualPaymentApplied;
+      existingInvoice.balanceDue = Math.max(0, Number(existingInvoice.total) - existingInvoice.amountPaid);
 
       if (existingInvoice.balanceDue <= 0) {
         existingInvoice.status = 'PAID';
         existingInvoice.balanceDue = 0;
-      } else {
+      } else if (existingInvoice.amountPaid > 0) {
         existingInvoice.status = 'PARTIALLY_PAID';
+      } else {
+        existingInvoice.status = 'SENT';
       }
 
       existingInvoice.updatedAt = now;
@@ -3749,10 +3751,12 @@ export async function registerRoutes(
       invoice.amountPaid = (Number(invoice.amountPaid) || 0) + amount;
       invoice.balanceDue = Math.max(0, Number(invoice.total) - invoice.amountPaid);
       if (invoice.balanceDue <= 0) {
-        invoice.status = 'Paid';
+        invoice.status = 'PAID';
         invoice.balanceDue = 0;
       } else if (invoice.amountPaid > 0) {
-        invoice.status = 'Partially Paid';
+        invoice.status = 'PARTIALLY_PAID';
+      } else {
+        invoice.status = 'SENT';
       }
       invoice.updatedAt = now;
 

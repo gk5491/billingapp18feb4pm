@@ -282,8 +282,8 @@
       "subTotal": 300,
       "total": 300,
       "amountPaid": 0,
-      "balanceDue": 300,
-      "status": "Sent",
+      "balanceDue": 0,
+      "status": "Paid",
       "sourceType": "quote",
       "sourceId": "22",
       "sourceNumber": "QT-000022",
@@ -333,6 +333,13 @@
           "action": "payment_recorded",
           "description": "Payment of ₹300 recorded and awaiting verification",
           "user": "Customer"
+        },
+        {
+          "id": "7",
+          "timestamp": "2026-02-19T05:56:33.112Z",
+          "action": "payment_recorded",
+          "description": "Payment of ₹300 recorded and awaiting verification",
+          "user": "Customer Ganesh"
         }
       ]
     },
@@ -684,8 +691,8 @@
       "subTotal": 15000,
       "total": 15000,
       "amountPaid": 0,
-      "balanceDue": 15000,
-      "status": "Sent",
+      "balanceDue": 14900,
+      "status": "Partially Paid",
       "sourceType": "quote",
       "sourceId": "15",
       "sourceNumber": "QT-000015",
@@ -721,6 +728,13 @@
           "action": "sent",
           "description": "Invoice has been sent",
           "user": "Admin User"
+        },
+        {
+          "id": "5",
+          "timestamp": "2026-02-19T05:54:36.963Z",
+          "action": "payment_recorded",
+          "description": "Payment of ₹100 recorded and awaiting verification",
+          "user": "Customer Ganesh"
         }
       ]
     },

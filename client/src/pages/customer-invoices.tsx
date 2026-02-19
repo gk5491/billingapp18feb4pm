@@ -78,25 +78,35 @@ export default function CustomerInvoicesPage() {
         const total = Number(inv.total || inv.amount || 0);
         const paid = Number(inv.amountPaid || 0);
         const balance = Math.max(0, total - paid);
+        const status = inv.status || '';
+        const normalizedStatus = status.toUpperCase();
+
+        let displayStatus = status;
+        if (balance <= 0) {
+            displayStatus = 'Paid';
+        } else if (paid > 0 || normalizedStatus === 'PARTIALLY_PAID' || normalizedStatus === 'PARTIALLY PAID') {
+            displayStatus = 'Partially Paid';
+        }
+
         return {
             ...inv,
             total,
             amountPaid: paid,
             balanceDue: balance,
-            status: balance <= 0 ? 'Paid' : (paid > 0 ? 'Partially Paid' : (inv.status || 'Sent'))
+            status: displayStatus
         };
     }).filter((inv: any) => {
         const invoiceNumber = inv.invoiceNumber || "";
         const matchesSearch = invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
-        const status = inv.status || "";
+        const status = inv.status;
+        const normalizedStatus = status.toUpperCase();
 
-        // Customers should see Sent, Paid, Overdue, and Partially Paid invoices
-        // Only Draft invoices are hidden
-        if (status.toUpperCase() === 'DRAFT') return false;
+        if (normalizedStatus === 'DRAFT') return false;
 
         const matchesTab = activeTab === "all" ||
-            (activeTab === "paid" && (status === "Paid" || status === "PAID")) ||
-            (activeTab === "unpaid" && (status === "Sent" || status === "Overdue" || status === "Partially Paid" || status === "PARTIALLY_PAID" || status === "Pending Verification"));
+            (activeTab === "paid" && normalizedStatus === "PAID") ||
+            (activeTab === "partially_paid" && (normalizedStatus === "PARTIALLY PAID" || normalizedStatus === "PARTIALLY_PAID")) ||
+            (activeTab === "unpaid" && (normalizedStatus === "SENT" || normalizedStatus === "OVERDUE" || normalizedStatus === "PENDING VERIFICATION"));
         return matchesSearch && matchesTab;
     });
 
@@ -153,14 +163,19 @@ export default function CustomerInvoicesPage() {
                     </div>
 
                     <div className="flex items-center gap-2 border-b border-slate-200">
-                        {['all', 'unpaid', 'paid'].map((tab) => (
+                        {[
+                            { id: 'all', label: 'All Invoices' },
+                            { id: 'unpaid', label: 'Unpaid' },
+                            { id: 'partially_paid', label: 'Partially Paid' },
+                            { id: 'paid', label: 'Paid' }
+                        ].map((tab) => (
                             <Button
-                                key={tab}
+                                key={tab.id}
                                 variant="ghost"
-                                className={`rounded-none border-b-2 px-6 py-4 h-auto font-bold font-display text-xs uppercase tracking-wider transition-all ${activeTab === tab ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500'}`}
-                                onClick={() => setActiveTab(tab)}
+                                className={`rounded-none border-b-2 px-6 py-4 h-auto font-bold font-display text-xs uppercase tracking-wider transition-all ${activeTab === tab.id ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500'}`}
+                                onClick={() => setActiveTab(tab.id)}
                             >
-                                {tab === 'all' ? 'All Invoices' : tab}
+                                {tab.label}
                             </Button>
                         ))}
                     </div>
