@@ -74,31 +74,10 @@ export default function CustomerInvoicesPage() {
         setPaymentDialogOpen(true);
     };
 
-    const filteredInvoices = invoices.map((inv: any) => {
-        const total = Number(inv.total || inv.amount || 0);
-        const paid = Number(inv.amountPaid || 0);
-        const balance = Math.max(0, total - paid);
-        const status = inv.status || '';
-        const normalizedStatus = status.toUpperCase();
-
-        let displayStatus = status;
-        if (balance <= 0) {
-            displayStatus = 'Paid';
-        } else if (paid > 0 || normalizedStatus === 'PARTIALLY_PAID' || normalizedStatus === 'PARTIALLY PAID') {
-            displayStatus = 'Partially Paid';
-        }
-
-        return {
-            ...inv,
-            total,
-            amountPaid: paid,
-            balanceDue: balance,
-            status: displayStatus
-        };
-    }).filter((inv: any) => {
+    const filteredInvoices = invoices.filter((inv: any) => {
         const invoiceNumber = inv.invoiceNumber || "";
         const matchesSearch = invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
-        const status = inv.status;
+        const status = inv.status || '';
         const normalizedStatus = status.toUpperCase();
 
         if (normalizedStatus === 'DRAFT') return false;
@@ -136,7 +115,7 @@ export default function CustomerInvoicesPage() {
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold font-display text-slate-900">
-                                    ₹{invoices.reduce((acc: number, inv: any) => acc + (inv.status !== 'Paid' ? (inv.balanceDue || inv.total) : 0), 0).toLocaleString('en-IN') || '0.00'}
+                                    ₹{invoices.reduce((acc: number, inv: any) => acc + (inv.status !== 'Paid' ? (Number(inv.balanceDue || inv.total || 0)) : 0), 0).toLocaleString('en-IN') || '0.00'}
                                 </div>
                             </CardContent>
                         </Card>
@@ -235,7 +214,7 @@ export default function CustomerInvoicesPage() {
                                             <TableCell className="text-slate-500 font-display">{format(new Date(invoice.dueDate), "MMM d, yyyy")}</TableCell>
                                             <TableCell>{getStatusBadge(invoice.status)}</TableCell>
                                             <TableCell className="text-right font-bold text-slate-900 font-display">₹{invoice.total?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</TableCell>
-                                            <TableCell className="text-right font-bold text-slate-600 font-display">₹{(invoice.balanceDue ?? invoice.total)?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</TableCell>
+                                            <TableCell className="text-right font-bold text-slate-600 font-display">₹{(Number(invoice.balanceDue ?? (Number(invoice.total || 0) - Number(invoice.amountPaid || 0))))?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</TableCell>
                                             <TableCell className="text-right pr-6" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex items-center justify-end gap-2">
                                                     {invoice.status !== 'Paid' && invoice.status !== 'Pending Verification' && (
