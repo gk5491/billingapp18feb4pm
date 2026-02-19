@@ -1134,7 +1134,14 @@ export default function Invoices() {
                                                                     {formatCurrency(invoice.amount)}
                                                                 </td>
                                                                 <td className="px-4 py-3 text-sm text-slate-900 text-right font-medium">
-                                                                    {formatCurrency(invoice.balanceDue)}
+                                            <TableCell className="text-right font-bold text-slate-900 font-display">
+                                                {formatCurrency(
+                                                    Number(invoice.total || 0) - 
+                                                    (invoice.payments || [])
+                                                        .filter((p: any) => p.status === 'Verified' || p.status === 'PAID' || p.status === 'PAID_SUCCESS')
+                                                        .reduce((acc: number, p: any) => acc + Number(p.amount || 0), 0)
+                                                )}
+                                            </TableCell>
                                                                 </td>
                                                                 <td className="px-4 py-3">
                                                                     <DropdownMenu>
