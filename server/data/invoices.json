@@ -530,7 +530,7 @@
       "subTotal": 75000,
       "total": 75000,
       "amountPaid": 0,
-      "balanceDue": 50000,
+      "balanceDue": 35000,
       "status": "Partially Paid",
       "sourceType": "quote",
       "sourceId": "18",
@@ -573,6 +573,13 @@
           "timestamp": "2026-02-19T06:46:47.242Z",
           "action": "payment_recorded",
           "description": "Payment of ₹25,000 recorded and awaiting verification",
+          "user": "Customer Ganesh"
+        },
+        {
+          "id": "6",
+          "timestamp": "2026-02-19T07:08:53.665Z",
+          "action": "payment_recorded",
+          "description": "Payment of ₹15,000 recorded and awaiting verification",
           "user": "Customer Ganesh"
         }
       ]

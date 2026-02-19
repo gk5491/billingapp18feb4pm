@@ -190,6 +190,18 @@
       "pdfUrl": null,
       "id": "107f67be-8fb6-44ff-80c9-1e925bc09632",
       "createdAt": "2026-02-19T06:48:29.304Z"
+    },
+    {
+      "paymentId": "1771484933664",
+      "customerId": "2",
+      "paymentNumber": "PAY-108",
+      "invoiceNumber": "INV-00015",
+      "amount": "15000",
+      "date": "2026-02-19T07:08:47.254Z",
+      "status": "received",
+      "pdfUrl": null,
+      "id": "7f44a49f-3445-479a-a76c-1ec13a8ff164",
+      "createdAt": "2026-02-19T07:09:44.271Z"
     }
   ]
 }
