@@ -76,27 +76,27 @@ export function CustomerPaymentForm({ invoices, initialInvoiceId, onSuccess, onC
         setSelectedInvoices(initial);
     }, [invoices, initialInvoiceId]);
 
-    // Handle amount change - Auto-allocate
-    const handleAmountChange = (amount: number) => {
-        setAmountReceived(amount);
-
-        // Auto-allocate logic (oldest first)
-        const sortedInvoices = [...invoices].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        let remaining = amount;
-        const newSelection: Record<string, { selected: boolean; payment: number }> = {};
-
-        invoices.forEach(inv => {
-            newSelection[inv.id] = { selected: false, payment: 0 };
-        });
-
-        for (const inv of sortedInvoices) {
-            if (remaining <= 0) break;
-            const payToAssign = Math.min(remaining, inv.balanceDue);
-            newSelection[inv.id] = { selected: true, payment: payToAssign };
-            remaining -= payToAssign;
+    // Handle amount change
+    const handleAmountChange = (val: string) => {
+        const amount = parseFloat(val) || 0;
+        const maxAmount = invoices.find(inv => inv.id === initialInvoiceId)?.balanceDue || 0;
+        
+        if (amount > maxAmount) {
+            setAmountReceived(maxAmount);
+            // Update selection for the single invoice
+            if (initialInvoiceId) {
+                setSelectedInvoices({
+                    [initialInvoiceId]: { selected: true, payment: maxAmount }
+                });
+            }
+        } else {
+            setAmountReceived(amount);
+            if (initialInvoiceId) {
+                setSelectedInvoices({
+                    [initialInvoiceId]: { selected: true, payment: amount }
+                });
+            }
         }
-
-        setSelectedInvoices(newSelection);
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,8 +186,9 @@ export function CustomerPaymentForm({ invoices, initialInvoiceId, onSuccess, onC
                             type="number"
                             className="pl-7 text-lg font-bold"
                             value={amountReceived || ''}
-                            onChange={(e) => handleAmountChange(parseFloat(e.target.value) || 0)}
+                            onChange={(e) => handleAmountChange(e.target.value)}
                             placeholder="0.00"
+                            max={invoices.find(inv => inv.id === initialInvoiceId)?.balanceDue}
                         />
                     </div>
                 </div>
@@ -270,31 +271,6 @@ export function CustomerPaymentForm({ invoices, initialInvoiceId, onSuccess, onC
                             </Badge>
                         ))}
                     </div>
-                </div>
-            </div>
-
-            <div className="border-t pt-4">
-                <Label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Invoice Allocation</Label>
-                <div className="mt-4 space-y-3">
-                    {invoices.filter(inv => inv.balanceDue > 0).map(inv => (
-                        <div key={inv.id} className={cn(
-                            "p-3 rounded-lg border transition-all",
-                            selectedInvoices[inv.id]?.selected ? "border-blue-200 bg-blue-50/30" : "border-slate-100 bg-slate-50/50"
-                        )}>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-bold">{inv.invoiceNumber}</p>
-                                    <p className="text-xs text-slate-500">{format(new Date(inv.date), "MMM d, yyyy")}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-xs text-slate-500">Balance: ₹{inv.balanceDue.toLocaleString('en-IN')}</p>
-                                    {selectedInvoices[inv.id]?.selected && (
-                                        <p className="text-sm font-bold text-blue-600">Allocated: ₹{selectedInvoices[inv.id].payment.toLocaleString('en-IN')}</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
                 </div>
             </div>
 
