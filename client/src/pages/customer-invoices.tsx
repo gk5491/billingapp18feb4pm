@@ -87,6 +87,28 @@ export default function CustomerInvoicesPage() {
             (activeTab === "partially_paid" && (normalizedStatus === "PARTIALLY PAID" || normalizedStatus === "PARTIALLY_PAID")) ||
             (activeTab === "unpaid" && (normalizedStatus === "SENT" || normalizedStatus === "OVERDUE" || normalizedStatus === "PENDING VERIFICATION"));
         return matchesSearch && matchesTab;
+    }).map((inv: any) => {
+        // Calculate balance considering only verified payments
+        const verifiedPayments = (inv.payments || []).filter((p: any) => 
+            p.status === 'Verified' || p.status === 'PAID' || p.status === 'PAID_SUCCESS'
+        );
+        const paidAmount = verifiedPayments.reduce((acc: number, p: any) => acc + Number(p.amount || 0), 0);
+        const totalAmount = Number(inv.total || 0);
+        const balance = Math.max(0, totalAmount - paidAmount);
+        
+        let displayStatus = inv.status;
+        if (balance <= 0 && totalAmount > 0) {
+            displayStatus = 'Paid';
+        } else if (paidAmount > 0) {
+            displayStatus = 'Partially Paid';
+        }
+
+        return {
+            ...inv,
+            balanceDue: balance,
+            amountPaid: paidAmount,
+            status: displayStatus
+        };
     });
 
     const getStatusBadge = (status: string) => {

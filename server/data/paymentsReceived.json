@@ -743,7 +743,38 @@
       "createdAt": "2026-02-19T05:56:33.110Z",
       "verifiedAt": "2026-02-19T05:57:42.345Z",
       "verifiedBy": "Admin"
+    },
+    {
+      "id": "1771483607241",
+      "paymentNumber": "PAY-107",
+      "date": "2026-02-19T06:46:34.927Z",
+      "referenceNumber": "",
+      "customerId": "2",
+      "customerName": "Mr. Ganesh K",
+      "customerEmail": "ganeshkale5491@gmail.com",
+      "invoices": [
+        {
+          "id": "1771315119660",
+          "invoiceNumber": "INV-00015",
+          "amountApplied": 25000
+        }
+      ],
+      "mode": "Cash",
+      "depositTo": "Undeposited Funds",
+      "amount": 25000,
+      "unusedAmount": 0,
+      "bankCharges": 0,
+      "tax": "None",
+      "taxAmount": 0,
+      "notes": "",
+      "attachments": [],
+      "sendThankYou": true,
+      "status": "Verified",
+      "paymentType": "Customer Payment",
+      "createdAt": "2026-02-19T06:46:47.241Z",
+      "verifiedAt": "2026-02-19T06:48:22.596Z",
+      "verifiedBy": "Admin"
     }
   ],
-  "nextPaymentNumber": 107
+  "nextPaymentNumber": 108
 }

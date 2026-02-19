@@ -6638,59 +6638,40 @@ export async function registerRoutes(
       data.nextPaymentNumber++;
       writePaymentsReceivedData(data);
 
-      // Update invoice balances if invoices are included in the payment
-      if (req.body.invoices && Array.isArray(req.body.invoices)) {
-        const invoicesData = readInvoicesData();
-        let invoicesUpdated = false;
+    // Logic for updating invoice status and balance will be handled by admin verification
+    // For now, we just link the payment to the invoice without reducing the balance
+    // the actual reduction happens in the status update endpoint (/api/payments-received/:id/status)
+    if (invoices && Array.isArray(invoices)) {
+      const invoicesData = readInvoicesData();
+      let invoicesUpdated = false;
 
-        req.body.invoices.forEach((paymentInvoice: any) => {
-          const invoiceIndex = invoicesData.invoices.findIndex((inv: any) => inv.id === paymentInvoice.invoiceId);
-          if (invoiceIndex !== -1) {
-            const invoice = invoicesData.invoices[invoiceIndex];
-            const paymentAmount = Number(paymentInvoice.paymentAmount || 0);
-            
-            // For customer side "Record Payment", we update balance and status immediately
-            // to reflect the "Partially Paid" or "Paid" state as requested.
-            const currentTotal = Number(invoice.total || 0);
-            const currentPaid = Number(invoice.amountPaid || 0);
-            const newAmountPaid = currentPaid + paymentAmount;
-            const newBalanceDue = Math.max(0, currentTotal - newAmountPaid);
-
-            invoicesData.invoices[invoiceIndex] = {
-              ...invoice,
-              balanceDue: newBalanceDue,
-              amountPaid: newAmountPaid,
-              status: newBalanceDue <= 0 ? 'Paid' : 'Partially Paid',
-              updatedAt: now
-            };
-
-            // Add payment record to invoice
-            if (!invoice.payments) {
-              invoicesData.invoices[invoiceIndex].payments = [];
-            }
-            invoicesData.invoices[invoiceIndex].payments.push({
-              id: newPayment.id,
-              date: paymentInvoice.paymentReceivedDate || req.body.date,
-              amount: paymentAmount,
-              paymentMode: req.body.mode || 'Cash',
-              reference: req.body.referenceNumber || '',
-              notes: req.body.notes || '',
-              status: req.body.status || 'PAID'
-            });
-
-            invoicesUpdated = true;
+      invoices.forEach((paymentInvoice: any) => {
+        const invoiceIndex = invoicesData.invoices.findIndex((inv: any) => inv.id === paymentInvoice.invoiceId);
+        if (invoiceIndex !== -1) {
+          const invoice = invoicesData.invoices[invoiceIndex];
+          
+          // Add payment record to invoice with 'Pending Verification' status
+          if (!invoice.payments) {
+            invoicesData.invoices[invoiceIndex].payments = [];
           }
-        });
-
-        if (invoicesUpdated) {
-          writeInvoicesData(invoicesData);
-
-          // Sync Sales Order statuses
-          req.body.invoices.forEach((inv: any) => {
-            syncSalesOrderStatus(inv.invoiceId);
+          invoicesData.invoices[invoiceIndex].payments.push({
+            id: newPayment.id,
+            date: paymentInvoice.paymentReceivedDate || req.body.date,
+            amount: Number(paymentInvoice.paymentAmount || 0),
+            paymentMode: req.body.mode || 'Cash',
+            reference: req.body.referenceNumber || '',
+            notes: req.body.notes || '',
+            status: 'Pending Verification'
           });
+
+          invoicesUpdated = true;
         }
+      });
+
+      if (invoicesUpdated) {
+        writeInvoicesData(invoicesData);
       }
+    }
 
       res.json({ success: true, data: newPayment });
     } catch (error) {
