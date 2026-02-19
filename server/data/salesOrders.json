@@ -6,8 +6,8 @@
       "date": "2026-02-19T04:26:24.444Z",
       "customerId": "2",
       "customerName": "Mr. Ganesh K",
-      "orderStatus": "Draft",
-      "invoiceStatus": "Not Invoiced",
+      "orderStatus": "Approved",
+      "invoiceStatus": "Invoiced",
       "paymentStatus": "Unpaid",
       "shipmentStatus": "Pending",
       "items": [

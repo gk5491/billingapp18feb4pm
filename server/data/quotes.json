@@ -1071,7 +1071,7 @@
       },
       "organizationId": "1",
       "date": "2026-02-19T04:05:23.295Z",
-      "status": "Draft",
+      "status": "Sent",
       "items": [
         {
           "id": "1",
@@ -1085,7 +1085,17 @@
       ],
       "subTotal": 400,
       "total": 400,
-      "createdAt": "2026-02-19T04:05:23.295Z"
+      "createdAt": "2026-02-19T04:05:23.295Z",
+      "updatedAt": "2026-02-19T04:58:45.318Z",
+      "activityLogs": [
+        {
+          "id": "1",
+          "timestamp": "2026-02-19T04:58:45.318Z",
+          "action": "sent",
+          "description": "Quote has been sent to customer",
+          "user": "Admin User"
+        }
+      ]
     }
   ],
   "nextQuoteNumber": 30

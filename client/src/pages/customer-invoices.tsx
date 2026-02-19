@@ -74,7 +74,18 @@ export default function CustomerInvoicesPage() {
         setPaymentDialogOpen(true);
     };
 
-    const filteredInvoices = invoices.filter((inv: any) => {
+    const filteredInvoices = invoices.map((inv: any) => {
+        const total = Number(inv.total || inv.amount || 0);
+        const paid = Number(inv.amountPaid || 0);
+        const balance = Math.max(0, total - paid);
+        return {
+            ...inv,
+            total,
+            amountPaid: paid,
+            balanceDue: balance,
+            status: balance <= 0 ? 'Paid' : (paid > 0 ? 'Partially Paid' : (inv.status || 'Sent'))
+        };
+    }).filter((inv: any) => {
         const invoiceNumber = inv.invoiceNumber || "";
         const matchesSearch = invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
         const status = inv.status || "";

@@ -141,6 +141,71 @@
       "sentAt": "2026-02-18T04:22:29.300Z",
       "providerMessageId": "mock-1771388549300-o3o7o9d",
       "providerResponse": "\"250 2.0.0 OK (Mock)\""
+    },
+    {
+      "id": "527e9dc4-9342-4f3f-8fc5-f83a633982b6",
+      "triggerId": "b9e3b1d0-813e-43c9-b302-824330f4543a",
+      "toAddresses": "[\"ganeshkale5491@gmail.com\"]",
+      "subject": "Quotation QT-000029 from Cybaem Tech",
+      "status": "sent",
+      "attempts": 0,
+      "createdAt": "2026-02-19T04:58:50.349Z",
+      "updatedAt": "2026-02-19T04:58:50.360Z",
+      "sentAt": "2026-02-19T04:58:50.360Z",
+      "providerMessageId": "mock-1771477130359-rorf9g7",
+      "providerResponse": "\"250 2.0.0 OK (Mock)\""
+    },
+    {
+      "id": "d807526b-5683-4ddb-a95a-ba0f72bbb8fe",
+      "triggerId": "92c741b1-1aee-41e7-86fe-4b3f32359b77",
+      "toAddresses": "[\"ganeshkale5491@gmail.com\"]",
+      "subject": "Sales Order SO-000004 from Cybaem Tech",
+      "status": "sent",
+      "attempts": 0,
+      "createdAt": "2026-02-19T05:00:28.415Z",
+      "updatedAt": "2026-02-19T05:00:28.416Z",
+      "sentAt": "2026-02-19T05:00:28.416Z",
+      "providerMessageId": "mock-1771477228416-yxs3db2",
+      "providerResponse": "\"250 2.0.0 OK (Mock)\""
+    },
+    {
+      "id": "44ac0a63-e0c2-486a-a7dc-0b3316179ba7",
+      "triggerId": "920a0a3e-cf92-4a4e-84bf-08656bd3b1af",
+      "toAddresses": "[\"ganeshkale5491@gmail.com\"]",
+      "subject": "Sales Order SO-000004 from Cybaem Tech",
+      "status": "sent",
+      "attempts": 0,
+      "createdAt": "2026-02-19T05:00:28.545Z",
+      "updatedAt": "2026-02-19T05:00:28.547Z",
+      "sentAt": "2026-02-19T05:00:28.547Z",
+      "providerMessageId": "mock-1771477228546-u8kqzj7",
+      "providerResponse": "\"250 2.0.0 OK (Mock)\""
+    },
+    {
+      "id": "bcb8ec91-a3c4-44e6-bac4-6830242a023f",
+      "triggerId": "673227a6-cfb2-4274-a083-03a08c03b775",
+      "toAddresses": "[\"ganeshkale5491@gmail.com\"]",
+      "subject": "Invoice INV-21 from Cybaem Tech",
+      "status": "sent",
+      "attempts": 0,
+      "createdAt": "2026-02-19T05:02:11.687Z",
+      "updatedAt": "2026-02-19T05:02:11.688Z",
+      "sentAt": "2026-02-19T05:02:11.688Z",
+      "providerMessageId": "mock-1771477331688-cif12xk",
+      "providerResponse": "\"250 2.0.0 OK (Mock)\""
+    },
+    {
+      "id": "970eb04e-27dd-4ca4-8fe9-0f13f9b4bde5",
+      "triggerId": "2abc926c-34e9-49f3-8623-7e97c1234e60",
+      "toAddresses": "[\"ganeshkale5491@gmail.com\"]",
+      "subject": "Invoice INV-22 from Cybaem Tech",
+      "status": "sent",
+      "attempts": 0,
+      "createdAt": "2026-02-19T05:02:11.855Z",
+      "updatedAt": "2026-02-19T05:02:11.856Z",
+      "sentAt": "2026-02-19T05:02:11.856Z",
+      "providerMessageId": "mock-1771477331856-o3izpuw",
+      "providerResponse": "\"250 2.0.0 OK (Mock)\""
     }
   ]
 }

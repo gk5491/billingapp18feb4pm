@@ -252,6 +252,71 @@
       "customBody": "<p>Hi Mrs. Priyanka karanjewar,</p><p>Your account has been successfully created.</p>",
       "sendMode": "immediate",
       "createdAt": "2026-02-18T03:50:40.036Z"
+    },
+    {
+      "id": "b9e3b1d0-813e-43c9-b302-824330f4543a",
+      "transactionType": "estimate",
+      "transactionId": "29",
+      "customerId": "2",
+      "recipients": [
+        "ganeshkale5491@gmail.com"
+      ],
+      "customSubject": "Quotation QT-000029 from Cybaem Tech",
+      "customBody": "<p>Dear Mr. Ganesh K,</p><p>Please find the Quotation QT-000029 for your review.</p>",
+      "sendMode": "immediate",
+      "createdAt": "2026-02-19T04:58:45.322Z"
+    },
+    {
+      "id": "92c741b1-1aee-41e7-86fe-4b3f32359b77",
+      "transactionType": "sales_order",
+      "transactionId": "1771475184444",
+      "customerId": "2",
+      "recipients": [
+        "ganeshkale5491@gmail.com"
+      ],
+      "customSubject": "Sales Order SO-000004 from Cybaem Tech",
+      "customBody": "<p>Dear Mr. Ganesh K,</p><p>Please find the Sales Order SO-000004 for your review.</p>",
+      "sendMode": "immediate",
+      "createdAt": "2026-02-19T05:00:23.410Z"
+    },
+    {
+      "id": "920a0a3e-cf92-4a4e-84bf-08656bd3b1af",
+      "transactionType": "sales_order",
+      "transactionId": "1771475184444",
+      "customerId": "2",
+      "recipients": [
+        "ganeshkale5491@gmail.com"
+      ],
+      "customSubject": "Sales Order SO-000004 from Cybaem Tech",
+      "customBody": "<p>Dear Mr. Ganesh K,</p><p>Please find the Sales Order SO-000004 for your review.</p>",
+      "sendMode": "immediate",
+      "createdAt": "2026-02-19T05:00:23.539Z"
+    },
+    {
+      "id": "673227a6-cfb2-4274-a083-03a08c03b775",
+      "transactionType": "invoice",
+      "transactionId": "1771477326681",
+      "customerId": "2",
+      "recipients": [
+        "ganeshkale5491@gmail.com"
+      ],
+      "customSubject": "Invoice INV-21 from Cybaem Tech",
+      "customBody": "<p>Dear Mr. Ganesh K,</p><p>Please find the Invoice INV-21 for your recent order.</p>",
+      "sendMode": "immediate",
+      "createdAt": "2026-02-19T05:02:06.682Z"
+    },
+    {
+      "id": "2abc926c-34e9-49f3-8623-7e97c1234e60",
+      "transactionType": "invoice",
+      "transactionId": "1771477326849",
+      "customerId": "2",
+      "recipients": [
+        "ganeshkale5491@gmail.com"
+      ],
+      "customSubject": "Invoice INV-22 from Cybaem Tech",
+      "customBody": "<p>Dear Mr. Ganesh K,</p><p>Please find the Invoice INV-22 for your recent order.</p>",
+      "sendMode": "immediate",
+      "createdAt": "2026-02-19T05:02:06.850Z"
     }
   ]
 }

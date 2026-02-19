@@ -7263,25 +7263,47 @@ export async function registerRoutes(
       if (payment.invoices && payment.invoices.length > 0) {
         const invoicesData = readInvoicesData();
         for (const invRef of payment.invoices) {
-          const invoice = invoicesData.invoices.find((inv: any) => inv.id === invRef.id || inv.id === (invRef as any).invoiceId);
+          const invoiceId = invRef.id || (invRef as any).invoiceId;
+          const invoice = invoicesData.invoices.find((inv: any) => String(inv.id) === String(invoiceId));
+          
           if (invoice) {
-            invoice.amountPaid = (invoice.amountPaid || 0) + (invRef.amountApplied || (invRef as any).paymentAmount);
-            invoice.balanceDue = Math.max(0, invoice.total - invoice.amountPaid);
-
-            if (invoice.balanceDue === 0) {
-              invoice.status = "Paid";
-            } else if (invoice.amountPaid > 0) {
-              invoice.status = "Partially Paid";
+            const amountApplied = Number(invRef.amountApplied || (invRef as any).paymentAmount || 0);
+            
+            // Initialize payments array if it doesn't exist
+            if (!invoice.payments) invoice.payments = [];
+            
+            // Add to invoice payment history if not already there
+            const alreadyRecorded = invoice.payments.some((p: any) => String(p.paymentId) === String(payment.id));
+            if (!alreadyRecorded) {
+              invoice.payments.push({
+                paymentId: payment.id,
+                paymentNumber: payment.paymentNumber,
+                amount: amountApplied,
+                date: payment.verifiedAt || new Date().toISOString(),
+                method: payment.mode || 'Direct'
+              });
+              
+              invoice.amountPaid = Number(invoice.amountPaid || 0) + amountApplied;
+              invoice.balanceDue = Math.max(0, Number(invoice.total || 0) - invoice.amountPaid);
+  
+              if (invoice.balanceDue <= 0) {
+                invoice.status = "PAID";
+              } else if (invoice.amountPaid > 0) {
+                invoice.status = "PARTIALLY_PAID";
+              }
+  
+              if (!invoice.activityLogs) invoice.activityLogs = [];
+              invoice.activityLogs.push({
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                timestamp: new Date().toISOString(),
+                action: "payment_verified",
+                description: `Admin verified payment ${payment.paymentNumber} of ₹${amountApplied.toLocaleString('en-IN')}`,
+                user: "Admin"
+              });
+              
+              // Sync Sales Order status if applicable
+              syncSalesOrderStatus(invoice.id);
             }
-
-            if (!invoice.activityLogs) invoice.activityLogs = [];
-            invoice.activityLogs.push({
-              id: Date.now().toString(),
-              timestamp: new Date().toISOString(),
-              action: "payment_verified",
-              description: `Admin verified payment ${payment.paymentNumber} of ₹${((invRef.amountApplied || (invRef as any).paymentAmount) || 0).toLocaleString('en-IN')}`,
-              user: "Admin"
-            });
           }
         }
         writeInvoicesData(invoicesData);

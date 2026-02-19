@@ -1,6 +1,69 @@
 {
   "invoices": [
     {
+      "id": "1771477326849",
+      "invoiceNumber": "INV-22",
+      "salesOrderId": "1771475184444",
+      "customerId": "2",
+      "customerName": "Mr. Ganesh K",
+      "date": "2026-02-19T05:02:06.849Z",
+      "dueDate": "2026-03-06T05:02:06.849Z",
+      "status": "Paid",
+      "items": [
+        {
+          "id": "1",
+          "name": "books",
+          "description": "efsg",
+          "quantity": 2,
+          "rate": 100,
+          "amount": 200,
+          "unit": "pcs",
+          "ordered": 2
+        }
+      ],
+      "subTotal": 200,
+      "total": 200,
+      "balanceDue": 0,
+      "amountPaid": 0,
+      "createdAt": "2026-02-19T05:02:06.849Z",
+      "activityLogs": [
+        {
+          "id": "1",
+          "timestamp": "2026-02-19T05:07:55.526Z",
+          "action": "payment_recorded",
+          "description": "Payment of ₹200 recorded and awaiting verification",
+          "user": "Customer Ganesh"
+        }
+      ]
+    },
+    {
+      "id": "1771477326681",
+      "invoiceNumber": "INV-21",
+      "salesOrderId": "1771475184444",
+      "customerId": "2",
+      "customerName": "Mr. Ganesh K",
+      "date": "2026-02-19T05:02:06.681Z",
+      "dueDate": "2026-03-06T05:02:06.681Z",
+      "status": "Sent",
+      "items": [
+        {
+          "id": "1",
+          "name": "books",
+          "description": "efsg",
+          "quantity": 2,
+          "rate": 100,
+          "amount": 200,
+          "unit": "pcs",
+          "ordered": 2
+        }
+      ],
+      "subTotal": 200,
+      "total": 200,
+      "balanceDue": 200,
+      "amountPaid": 0,
+      "createdAt": "2026-02-19T05:02:06.681Z"
+    },
+    {
       "id": "1771395460960",
       "invoiceNumber": "INV-00020",
       "referenceNumber": "",
@@ -537,8 +600,8 @@
       "subTotal": 36000,
       "total": 36000,
       "amountPaid": 0,
-      "balanceDue": 36000,
-      "status": "Sent",
+      "balanceDue": 0,
+      "status": "Paid",
       "sourceType": "quote",
       "sourceId": "16",
       "sourceNumber": "QT-000016",
@@ -567,6 +630,20 @@
           "action": "sent",
           "description": "Invoice has been sent",
           "user": "Admin User"
+        },
+        {
+          "id": "4",
+          "timestamp": "2026-02-19T05:10:10.797Z",
+          "action": "payment_recorded",
+          "description": "Payment of ₹13,000 recorded and awaiting verification",
+          "user": "Customer Ganesh"
+        },
+        {
+          "id": "5",
+          "timestamp": "2026-02-19T05:12:36.814Z",
+          "action": "payment_recorded",
+          "description": "Payment of ₹33,200 recorded and awaiting verification",
+          "user": "Customer Ganesh"
         }
       ]
     },
@@ -1191,10 +1268,10 @@
       "adjustment": 0,
       "total": 17700,
       "amountPaid": 700,
-      "balanceDue": 17000,
+      "balanceDue": 0,
       "customerNotes": "",
       "termsAndConditions": "",
-      "status": "PARTIALLY_PAID",
+      "status": "Paid",
       "sourceType": "quote",
       "sourceId": "1770791750237",
       "sourceNumber": "QT-000002",
@@ -1233,6 +1310,13 @@
           "action": "credit_applied",
           "description": "Applied ₹200 from Credit Note CN-00004",
           "user": "Admin User"
+        },
+        {
+          "id": "4",
+          "timestamp": "2026-02-19T05:10:10.797Z",
+          "action": "payment_recorded",
+          "description": "Payment of ₹17,000 recorded and awaiting verification",
+          "user": "Customer Ganesh"
         }
       ],
       "creditsApplied": [
@@ -1605,5 +1689,5 @@
       ]
     }
   ],
-  "nextInvoiceNumber": 21
+  "nextInvoiceNumber": 23
 }
