@@ -8,3 +8,5 @@
 [x] 8. Verify application starts and runs correctly
 [x] 9. Provision PostgreSQL database and push schema
 [x] 10. Configure workflow with webview output and verify app loads correctly
+[x] 11. Implement balance due reduction logic upon payment verification
+[x] 12. Ensure admin and customer views reflect updated balance after verification
