@@ -3883,7 +3883,7 @@ export async function registerRoutes(
         timestamp: now,
         action: 'sent',
         description: 'Quote has been sent to customer',
-        user: req.body.sentBy || 'Admin User'
+        user: req.body.updatedBy || 'Admin User'
       });
 
       data.quotes[quoteIndex] = quote;
