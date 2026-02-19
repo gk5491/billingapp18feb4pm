@@ -53,6 +53,13 @@ const formatAddress = (address: any) => {
 };
 
 export const InvoicePDFView = ({ invoice, branding, organization }: { invoice: any, branding: any, organization: any }) => {
+    // Calculate verified payments and balance due
+    const verifiedPayments = (invoice.payments || []).filter((p: any) => 
+        p.status === 'Verified' || p.status === 'PAID' || p.status === 'PAID_SUCCESS'
+    );
+    const amountPaid = verifiedPayments.reduce((acc: number, p: any) => acc + Number(p.amount || 0), 0);
+    const balanceDue = Math.max(0, Number(invoice.total || 0) - amountPaid);
+
     return (
         <div id="invoice-pdf-inner" className="bg-white" style={{
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -209,15 +216,15 @@ export const InvoicePDFView = ({ invoice, branding, organization }: { invoice: a
                         <span style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a' }}>Total</span>
                         <span style={{ fontSize: '16px', fontWeight: '800', color: '#1e40af' }}>{formatCurrency(invoice.total)}</span>
                     </div>
-                    {invoice.amountPaid > 0 && (
+                    {amountPaid > 0 && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '12px', color: '#16a34a' }}>
                             <span style={{ fontWeight: '600' }}>Payment Made</span>
-                            <span style={{ fontWeight: '700' }}>(-) {formatCurrency(invoice.amountPaid)}</span>
+                            <span style={{ fontWeight: '700' }}>(-) {formatCurrency(amountPaid)}</span>
                         </div>
                     )}
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #e2e8f0' }}>
                         <span style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a' }}>Balance Due</span>
-                        <span style={{ fontSize: '14px', fontWeight: '800', color: '#b91c1c' }}>{formatCurrency(invoice.balanceDue)}</span>
+                        <span style={{ fontSize: '14px', fontWeight: '800', color: '#b91c1c' }}>{formatCurrency(balanceDue)}</span>
                     </div>
                 </div>
             </div>

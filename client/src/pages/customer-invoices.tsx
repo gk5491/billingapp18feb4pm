@@ -74,7 +74,7 @@ export default function CustomerInvoicesPage() {
         setPaymentDialogOpen(true);
     };
 
-    const filteredInvoices = invoices.filter((inv: any) => {
+    const filteredInvoices = (invoices || []).filter((inv: any) => {
         const invoiceNumber = inv.invoiceNumber || "";
         const matchesSearch = invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
         const status = inv.status || '';
@@ -236,7 +236,9 @@ export default function CustomerInvoicesPage() {
                                             <TableCell className="text-slate-500 font-display">{format(new Date(invoice.dueDate), "MMM d, yyyy")}</TableCell>
                                             <TableCell>{getStatusBadge(invoice.status)}</TableCell>
                                             <TableCell className="text-right font-bold text-slate-900 font-display">₹{invoice.total?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</TableCell>
-                                            <TableCell className="text-right font-bold text-slate-600 font-display">₹{(Number(invoice.balanceDue ?? (Number(invoice.total || 0) - Number(invoice.amountPaid || 0))))?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</TableCell>
+                                            <TableCell className="text-right font-bold text-slate-600 font-display">
+                                                ₹{(invoice.balanceDue || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                            </TableCell>
                                             <TableCell className="text-right pr-6" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex items-center justify-end gap-2">
                                                     {invoice.status !== 'Paid' && invoice.status !== 'Pending Verification' && (
