@@ -26,6 +26,71 @@
       "recipient": "customer@example.com",
       "fromEmail": "ganesh.kale@cybaemtech.com",
       "sentAt": "2026-02-18T10:24:10.151Z"
+    },
+    {
+      "id": "n6h7n9m5v",
+      "customerId": "2",
+      "transactionId": "29",
+      "transactionType": "quote",
+      "type": "manual",
+      "status": "sent",
+      "subject": "Quote QT-000029 from Cybaem Tech",
+      "body": "Please find the attached quote QT-000029 for your review.",
+      "recipient": "customer@example.com",
+      "fromEmail": "ganesh.kale@cybaemtech.com",
+      "sentAt": "2026-02-19T04:05:39.102Z"
+    },
+    {
+      "id": "2zvsiavcv",
+      "customerId": "2",
+      "transactionId": "29",
+      "transactionType": "quote",
+      "type": "manual",
+      "status": "sent",
+      "subject": "Quote QT-000029 from Cybaem Tech",
+      "body": "Please find the attached quote QT-000029 for your review.",
+      "recipient": "customer@example.com",
+      "fromEmail": "ganesh.kale@cybaemtech.com",
+      "sentAt": "2026-02-19T04:05:49.413Z"
+    },
+    {
+      "id": "ngo6jsxxo",
+      "customerId": "2",
+      "transactionId": "29",
+      "transactionType": "quote",
+      "type": "manual",
+      "status": "sent",
+      "subject": "Quote QT-000029 from Cybaem Tech",
+      "body": "Please find the attached quote QT-000029 for your review.",
+      "recipient": "customer@example.com",
+      "fromEmail": "ganesh.kale@cybaemtech.com",
+      "sentAt": "2026-02-19T04:34:38.830Z"
+    },
+    {
+      "id": "htigiocw8",
+      "customerId": "2",
+      "transactionId": "29",
+      "transactionType": "quote",
+      "type": "manual",
+      "status": "sent",
+      "subject": "Quote QT-000029 from Cybaem Tech",
+      "body": "Please find the attached quote QT-000029 for your review.",
+      "recipient": "customer@example.com",
+      "fromEmail": "ganesh.kale@cybaemtech.com",
+      "sentAt": "2026-02-19T04:37:53.525Z"
+    },
+    {
+      "id": "lqz6ijz4d",
+      "customerId": "2",
+      "transactionId": "29",
+      "transactionType": "quote",
+      "type": "manual",
+      "status": "sent",
+      "subject": "Quote QT-000029 from Cybaem Tech",
+      "body": "Please find the attached quote QT-000029 for your review.",
+      "recipient": "customer@example.com",
+      "fromEmail": "ganesh.kale@cybaemtech.com",
+      "sentAt": "2026-02-19T04:38:07.948Z"
     }
   ]
 }

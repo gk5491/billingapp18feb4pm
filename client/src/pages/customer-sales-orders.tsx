@@ -4,13 +4,23 @@ import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Package, CheckCircle, XCircle, FileText, Download } from "lucide-react";
+import { Package, CheckCircle, XCircle, FileText, Download, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { SalesOrderPdfView } from "@/components/SalesOrderPdfView";
+import { generatePDFFromElement } from "@/lib/pdf-utils";
+import { useBranding } from "@/hooks/use-branding";
+import { useOrganization } from "@/context/OrganizationContext";
 
 export default function CustomerSalesOrdersPage() {
     const { token } = useAuthStore();
     const { toast } = useToast();
     const queryClient = useQueryClient();
+    const { data: branding } = useBranding();
+    const { currentOrganization } = useOrganization();
+
+    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const [isPdfOpen, setIsPdfOpen] = useState(false);
 
     const { data: ordersResponse, isLoading } = useQuery<any>({
         queryKey: ["/api/flow/my-sales-orders"],
@@ -40,6 +50,27 @@ export default function CustomerSalesOrdersPage() {
             toast({ title: "Error", description: error.message, variant: "destructive" });
         }
     });
+    const handleDownloadPDF = async (order: any) => {
+        toast({ title: "Preparing download...", description: "Please wait while we generate your PDF." });
+        setSelectedOrder(order);
+        // Small delay to ensure any state needed for rendering is ready if we were doing it dynamically
+        setTimeout(async () => {
+            try {
+                await generatePDFFromElement("sales-order-pdf-preview", `SalesOrder-${order.salesOrderNumber}.pdf`);
+                toast({
+                    title: "PDF Downloaded",
+                    description: `${order.salesOrderNumber}.pdf has been downloaded successfully.`
+                });
+            } catch (error) {
+                console.error("PDF generation error:", error);
+                toast({
+                    title: "Failed to download PDF",
+                    description: "Please try again.",
+                    variant: "destructive"
+                });
+            }
+        }, 500);
+    };
 
     const getStatusBadge = (status: string) => {
         const s = status.toLowerCase();
@@ -97,25 +128,36 @@ export default function CustomerSalesOrdersPage() {
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-3 min-w-[200px]">
-                                        <Button variant="outline" className="w-full gap-2">
+                                        <Button
+                                            variant="outline"
+                                            className="w-full gap-2"
+                                            onClick={() => {
+                                                setSelectedOrder(order);
+                                                setIsPdfOpen(true);
+                                            }}
+                                        >
                                             <FileText className="h-4 w-4" /> View Details
                                         </Button>
-                                        <Button variant="outline" className="w-full gap-2 text-blue-600 border-blue-200 hover:bg-blue-50">
+                                        <Button
+                                            variant="outline"
+                                            className="w-full gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+                                            onClick={() => handleDownloadPDF(order)}
+                                        >
                                             <Download className="h-4 w-4" /> Download PDF
                                         </Button>
                                         {order.orderStatus === 'Sent' && (
                                             <div className="grid grid-cols-2 gap-2 mt-2">
-                                                <Button 
+                                                <Button
                                                     onClick={() => actionMutation.mutate({ id: order.id, action: 'approve' })}
                                                     disabled={actionMutation.isPending}
                                                     className="bg-green-600 hover:bg-green-700 gap-1"
                                                 >
                                                     <CheckCircle className="h-4 w-4" /> Approve
                                                 </Button>
-                                                <Button 
+                                                <Button
                                                     onClick={() => actionMutation.mutate({ id: order.id, action: 'reject' })}
                                                     disabled={actionMutation.isPending}
-                                                    variant="destructive" 
+                                                    variant="destructive"
                                                     className="gap-1"
                                                 >
                                                     <XCircle className="h-4 w-4" /> Reject
@@ -129,6 +171,36 @@ export default function CustomerSalesOrdersPage() {
                     ))}
                 </div>
             )}
+
+            <Dialog open={isPdfOpen} onOpenChange={setIsPdfOpen}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+                    <DialogHeader className="p-4 border-b sticky top-0 bg-white z-10 flex flex-row items-center justify-between">
+                        <DialogTitle>Sales Order Details</DialogTitle>
+                    </DialogHeader>
+                    <div className="p-8 bg-slate-100 flex justify-center">
+                        <div className="bg-white shadow-xl">
+                            {selectedOrder && (
+                                <SalesOrderPdfView
+                                    order={selectedOrder}
+                                    branding={branding}
+                                    organization={currentOrganization}
+                                />
+                            )}
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Hidden PDF view for background download generation */}
+            <div className="hidden">
+                {selectedOrder && (
+                    <SalesOrderPdfView
+                        order={selectedOrder}
+                        branding={branding}
+                        organization={currentOrganization}
+                    />
+                )}
+            </div>
         </div>
     );
 }

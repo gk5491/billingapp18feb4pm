@@ -140,7 +140,7 @@ export default function RequestItemsPage() {
     };
 
     const onNewItemSubmit = (data: NewItemRequest) => {
-        newItemMutation.mutate({ ...data, requestType: "quote" }); // Default for new item requests
+        newItemMutation.mutate(data);
     };
 
     const cartItemCount = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
@@ -223,9 +223,9 @@ export default function RequestItemsPage() {
                                 </label>
                             </div>
                         </div>
-                        <Button 
-                            onClick={submitCart} 
-                            size="lg" 
+                        <Button
+                            onClick={submitCart}
+                            size="lg"
                             disabled={!requestType}
                             className={cn(
                                 "gap-2 shadow-lg transition-all px-8 h-12 rounded-xl font-bold tracking-tight",
@@ -367,6 +367,43 @@ export default function RequestItemsPage() {
                                         />
                                         {errors.quantity && (
                                             <p className="text-sm text-red-500 font-medium">{errors.quantity.message}</p>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-bold uppercase tracking-wider text-slate-500">Request Type *</Label>
+                                        <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl border border-slate-200/60 mt-1">
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    {...register("requestType", { required: "Please select a request type" })}
+                                                    value="quote"
+                                                    defaultChecked
+                                                    className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                                                />
+                                                <span className="text-sm font-medium text-slate-700">Quote</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    {...register("requestType", { required: "Please select a request type" })}
+                                                    value="sales_order"
+                                                    className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                                                />
+                                                <span className="text-sm font-medium text-slate-700">Sales Order</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    {...register("requestType", { required: "Please select a request type" })}
+                                                    value="both"
+                                                    className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                                                />
+                                                <span className="text-sm font-medium text-slate-700">Both</span>
+                                            </label>
+                                        </div>
+                                        {errors.requestType && (
+                                            <p className="text-sm text-red-500 font-medium">{errors.requestType.message}</p>
                                         )}
                                     </div>
                                 </div>

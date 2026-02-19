@@ -78,6 +78,7 @@ import CustomerQuotesPage from "@/pages/customer-quotes";
 import CustomerSalesOrdersPage from "@/pages/customer-sales-orders";
 import CustomerInvoicesPage from "@/pages/customer-invoices";
 import CustomerReceiptsPage from "@/pages/customer-receipts";
+import CustomerPaymentHistoryPage from "@/pages/customer-payment-history";
 
 import { useAuthStore } from "@/store/authStore";
 import { useLocation } from "wouter";
@@ -99,6 +100,7 @@ function Router() {
               <Route path="/customer/sales-orders" component={CustomerSalesOrdersPage} />
               <Route path="/customer/invoices" component={CustomerInvoicesPage} />
               <Route path="/customer/receipts" component={CustomerReceiptsPage} />
+              <Route path="/customer/payment-history" component={CustomerPaymentHistoryPage} />
 
               <Route path="/settings/organizations" component={SettingsOrganizations} />
               <Route path="/" component={Dashboard} />

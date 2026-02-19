@@ -39,7 +39,8 @@ import {
   FolderOpen,
   Home,
   PanelLeftClose,
-  LogOut
+  LogOut,
+  History
 } from "lucide-react";
 
 interface NavItemProps {
@@ -222,6 +223,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <NavItem href="/customer/quotes" icon={FileText} label="My Quotes" />
               <NavItem href="/customer/sales-orders" icon={ShoppingCart} label="My Sales Orders" />
               <NavItem href="/customer/invoices" icon={FileText} label="My Invoices" />
+              <NavItem href="/customer/payment-history" icon={History} label="Payment History" />
               <NavItem href="/customer/receipts" icon={FileCheck} label="My Receipts" />
             </>
           ) : (

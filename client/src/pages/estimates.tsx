@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useAuthStore } from "@/store/authStore";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import html2canvas from "html2canvas";
@@ -442,6 +443,7 @@ function QuoteDetailPanel({ quote, onClose, onEdit, onDelete, onConvert, onClone
   const [activeTab, setActiveTab] = useState("overview");
   const [showPdfView, setShowPdfView] = useState(true);
   const { toast } = useToast();
+  const { token } = useAuthStore();
 
   const handlePrint = async () => {
     // Show preparing toast
@@ -483,6 +485,28 @@ function QuoteDetailPanel({ quote, onClose, onEdit, onDelete, onConvert, onClone
     } catch (error) {
       console.error('Download error:', error);
       toast({ title: "Failed to download PDF", variant: "destructive" });
+    }
+  };
+
+  const handleSendEmail = async () => {
+    try {
+      const response = await fetch(`/api/quotes/${quote.id}/send`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ sentBy: "Admin User" })
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: "Success", description: "Quote sent to customer successfully" });
+        onEdit(); // Refresh data
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to send quote", variant: "destructive" });
     }
   };
 
@@ -540,7 +564,7 @@ function QuoteDetailPanel({ quote, onClose, onEdit, onDelete, onConvert, onClone
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem data-testid="menu-item-send">
+              <DropdownMenuItem onClick={handleSendEmail} data-testid="menu-item-send">
                 <Send className="mr-2 h-4 w-4" /> Send Email
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onClone} data-testid="menu-item-clone">
@@ -793,6 +817,7 @@ function QuoteDetailPanel({ quote, onClose, onEdit, onDelete, onConvert, onClone
 }
 
 export default function Estimates() {
+  const { token } = useAuthStore();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [quotes, setQuotes] = useState<Quote[]>([]);
@@ -832,7 +857,9 @@ export default function Estimates() {
 
   const fetchBranding = async () => {
     try {
-      const response = await fetch("/api/branding");
+      const response = await fetch("/api/branding", {
+        headers: token ? { "Authorization": `Bearer ${token}` } : {}
+      });
       const data = await response.json();
       if (data.success) {
         setBranding(data.data);
@@ -844,7 +871,9 @@ export default function Estimates() {
 
   const fetchQuotes = async () => {
     try {
-      const response = await fetch('/api/quotes');
+      const response = await fetch('/api/quotes', {
+        headers: token ? { "Authorization": `Bearer ${token}` } : {}
+      });
       if (response.ok) {
         const data = await response.json();
         setQuotes(data.data || []);

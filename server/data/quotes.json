@@ -1043,7 +1043,50 @@
       "subTotal": 100,
       "total": 100,
       "createdAt": "2026-02-18T10:26:03.412Z"
+    },
+    {
+      "id": "29",
+      "quoteNumber": "QT-000029",
+      "customerId": "2",
+      "customerName": "Mr. Ganesh K",
+      "billingAddress": {
+        "street": "Guruji chowwk, near demart",
+        "city": "Nanded",
+        "state": "MH",
+        "country": "India",
+        "pincode": "431892",
+        "attention": "",
+        "phone": "",
+        "fax": ""
+      },
+      "shippingAddress": {
+        "street": "Guruji chowwk, near demart",
+        "city": "Nanded",
+        "state": "MH",
+        "country": "India",
+        "pincode": "431892",
+        "attention": "",
+        "phone": "",
+        "fax": ""
+      },
+      "organizationId": "1",
+      "date": "2026-02-19T04:05:23.295Z",
+      "status": "Draft",
+      "items": [
+        {
+          "id": "1",
+          "name": "books",
+          "description": "efsg",
+          "quantity": 4,
+          "rate": 100,
+          "amount": 400,
+          "unit": "pcs"
+        }
+      ],
+      "subTotal": 400,
+      "total": 400,
+      "createdAt": "2026-02-19T04:05:23.295Z"
     }
   ],
-  "nextQuoteNumber": 29
+  "nextQuoteNumber": 30
 }

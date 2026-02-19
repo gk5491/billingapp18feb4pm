@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import InvoiceDetailPanel from "@/modules/sales/components/InvoiceDetailPanel";
+import { CustomerPaymentForm } from "@/components/CustomerPaymentForm";
 
 export default function CustomerInvoicesPage() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -43,7 +44,6 @@ export default function CustomerInvoicesPage() {
     const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
     const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
     const [invoiceToPay, setInvoiceToPay] = useState<any>(null);
-    const [paymentAmount, setPaymentAmount] = useState("");
     const [activeTab, setActiveTab] = useState("all");
 
     const { user } = useAuthStore();
@@ -61,37 +61,17 @@ export default function CustomerInvoicesPage() {
 
     const invoices = allInvoices;
 
-    const payMutation = useMutation({
-        mutationFn: async ({ id, amount }: { id: string, amount: number }) => {
-            const res = await fetch(`/api/flow/invoices/${id}/pay`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount }),
-            });
-            if (!res.ok) throw new Error("Payment failed");
-            return res.json();
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
-            toast({ title: "Payment Successful", description: "Your payment has been processed." });
-            setPaymentDialogOpen(false);
-            setInvoiceToPay(null);
-        },
-        onError: () => {
-            toast({ title: "Payment Failed", description: "Please try again.", variant: "destructive" });
-        }
-    });
+    // Simplified mutation removed as CustomerPaymentForm handles its own submission
+    const handlePaymentSuccess = () => {
+        queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
+        setPaymentDialogOpen(false);
+        setInvoiceToPay(null);
+    };
 
     const handlePayClick = (e: React.MouseEvent, invoice: any) => {
         e.stopPropagation();
         setInvoiceToPay(invoice);
-        setPaymentAmount(String(invoice.balanceDue || invoice.total));
         setPaymentDialogOpen(true);
-    };
-
-    const handlePaymentSubmit = () => {
-        if (!invoiceToPay) return;
-        payMutation.mutate({ id: invoiceToPay.id, amount: Number(paymentAmount) });
     };
 
     const filteredInvoices = invoices.filter((inv: any) => {
@@ -232,9 +212,9 @@ export default function CustomerInvoicesPage() {
                                             <TableCell className="text-right font-bold text-slate-600 font-display">₹{(invoice.balanceDue ?? invoice.total)?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</TableCell>
                                             <TableCell className="text-right pr-6" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex items-center justify-end gap-2">
-                                                    {invoice.status !== 'Paid' && (
+                                                    {invoice.status !== 'Paid' && invoice.status !== 'Pending Verification' && (
                                                         <Button size="sm" className="h-8 px-4 font-bold font-display bg-green-600 hover:bg-green-700 text-white shadow-sm" onClick={(e) => handlePayClick(e, invoice)}>
-                                                            <CheckCircle className="h-3.5 w-3.5 mr-1.5" /> Record Payment
+                                                            <CreditCard className="h-3.5 w-3.5 mr-1.5" /> Record Payment
                                                         </Button>
                                                     )}
                                                     <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-slate-100 text-slate-400 group-hover:text-blue-600" onClick={() => setSelectedInvoice(invoice)}>
@@ -264,34 +244,20 @@ export default function CustomerInvoicesPage() {
             )}
 
             <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
-                <DialogContent>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Make Payment</DialogTitle>
-                        <DialogDescription>
-                            Enter the amount you would like to pay for {invoiceToPay?.invoiceNumber}.
+                        <DialogTitle className="text-2xl font-bold font-display">Record Payment</DialogTitle>
+                        <DialogDescription className="font-display">
+                            Provide details about your payment. This will be verified by the admin.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="amount">Amount</Label>
-                            <div className="relative">
-                                <span className="absolute left-3 top-2.5 text-slate-500">₹</span>
-                                <Input
-                                    id="amount"
-                                    type="number"
-                                    className="pl-7"
-                                    value={paymentAmount}
-                                    onChange={(e) => setPaymentAmount(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setPaymentDialogOpen(false)}>Cancel</Button>
-                        <Button onClick={handlePaymentSubmit} disabled={payMutation.isPending}>
-                            {payMutation.isPending ? "Processing..." : "Pay Now"}
-                        </Button>
-                    </DialogFooter>
+
+                    <CustomerPaymentForm
+                        invoices={invoices}
+                        initialInvoiceId={invoiceToPay?.id}
+                        onSuccess={handlePaymentSuccess}
+                        onCancel={() => setPaymentDialogOpen(false)}
+                    />
                 </DialogContent>
             </Dialog>
         </div>

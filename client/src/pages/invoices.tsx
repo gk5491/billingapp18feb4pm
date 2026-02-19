@@ -193,6 +193,7 @@ const getStatusColor = (status: string) => {
         case 'draft':
             return 'bg-slate-50 text-slate-600 border-slate-200 font-display font-bold text-[10px] uppercase tracking-wider px-2 py-0.5';
         case 'partially_paid':
+        case 'partially paid':
             return 'bg-amber-50 text-amber-700 border-amber-200 font-display font-bold text-[10px] uppercase tracking-wider px-2 py-0.5';
         case 'void':
             return 'bg-slate-100 text-slate-400 border-slate-200 font-display font-bold text-[10px] uppercase tracking-wider px-2 py-0.5';
@@ -291,7 +292,7 @@ export default function Invoices() {
         const normalizedStatus = (invoice.status || '').toUpperCase();
         const normalizedFilter = activeFilter.toUpperCase();
 
-        if (normalizedFilter === 'SENT' && (normalizedStatus === 'SENT' || normalizedStatus === 'PENDING' || normalizedStatus === 'OVERDUE')) {
+        if (normalizedFilter === 'SENT' && (normalizedStatus === 'SENT' || normalizedStatus === 'PENDING' || normalizedStatus === 'OVERDUE' || normalizedStatus === 'PARTIALLY PAID')) {
             return matchesSearch;
         }
 
@@ -833,7 +834,7 @@ export default function Invoices() {
         const status = (invoice.status || '').toLowerCase();
         if (status === 'paid') return { label: 'Paid', color: 'text-green-700', bgColor: 'bg-green-100' };
         if (status === 'draft') return { label: 'Draft', color: 'text-slate-600', bgColor: 'bg-slate-100' };
-        if (status === 'partially_paid') return { label: 'Partially Paid', color: 'text-yellow-700', bgColor: 'bg-yellow-100' };
+        if (status === 'partially_paid' || status === 'partially paid') return { label: 'Partially Paid', color: 'text-amber-700', bgColor: 'bg-amber-100' };
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);

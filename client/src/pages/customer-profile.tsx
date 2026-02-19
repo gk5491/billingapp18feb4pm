@@ -8,51 +8,51 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import { 
-  User, 
-  ChevronDown, 
-  Receipt, 
-  CreditCard, 
-  FileCheck, 
-  Package, 
-  Truck, 
-  Wallet, 
-  BadgeIndianRupee,
-  X,
-  Copy,
-  UserMinus,
-  UserCheck,
-  Trash2,
-  Clock,
-  Bold,
-  Italic,
-  Underline,
-  Loader2,
-  MessageSquare,
-  Mail,
-  Printer,
-  Download,
-  Calendar
+import {
+    User,
+    ChevronDown,
+    Receipt,
+    CreditCard,
+    FileCheck,
+    Package,
+    Truck,
+    Wallet,
+    BadgeIndianRupee,
+    X,
+    Copy,
+    UserMinus,
+    UserCheck,
+    Trash2,
+    Clock,
+    Bold,
+    Italic,
+    Underline,
+    Loader2,
+    MessageSquare,
+    Mail,
+    Printer,
+    Download,
+    Calendar
 } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+    DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { format, startOfMonth, subMonths, parseISO } from "date-fns";
 
@@ -112,23 +112,33 @@ export default function CustomerProfilePage() {
         if (!customer?.id) return;
         try {
             const [commentsRes, transactionsRes, mailsRes, activitiesRes, invoicesRes] = await Promise.all([
-                fetch(`/api/customers/${customer.id}/comments`),
-                fetch(`/api/customers/${customer.id}/transactions`),
-                fetch(`/api/customers/${customer.id}/mails`),
-                fetch(`/api/customers/${customer.id}/activities`),
-                fetch(`/api/invoices`)
+                fetch(`/api/customers/${customer.id}/comments`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                fetch(`/api/customers/${customer.id}/transactions`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                fetch(`/api/customers/${customer.id}/mails`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                fetch(`/api/customers/${customer.id}/activities`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                fetch(`/api/invoices`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
             ]);
 
             if (commentsRes.ok) {
                 const data = await commentsRes.json();
                 setComments(data.data || []);
             }
-            
+
             if (transactionsRes.ok) {
                 const data = await transactionsRes.json();
                 setTransactions(prev => ({ ...prev, ...data.data }));
             }
-            
+
             if (invoicesRes.ok) {
                 const invoicesData = await invoicesRes.json();
                 const filteredInvoices = (invoicesData.data || []).filter((inv: any) => String(inv.customerId) === String(customer.id));
@@ -181,9 +191,9 @@ export default function CustomerProfilePage() {
             });
         }
 
-        const txList = (transactions.invoices || []).filter((inv:any) => inv.status !== 'Void');
+        const txList = (transactions.invoices || []).filter((inv: any) => inv.status !== 'Void');
 
-        txList.forEach((tx:any) => {
+        txList.forEach((tx: any) => {
             const txDate = parseISO(tx.date);
             const mStart = startOfMonth(txDate);
             const monthIdx = months.findIndex(m => m.date.getTime() === mStart.getTime());
@@ -202,7 +212,10 @@ export default function CustomerProfilePage() {
         try {
             const response = await fetch(`/api/customers/${customer.id}/comments`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ text: newComment })
             });
             if (response.ok) {
@@ -301,13 +314,13 @@ export default function CustomerProfilePage() {
                                             <div className="mt-4">
                                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-display">Billing Address</p>
                                                 <div className="text-sm">
-                                                    {formatAddress(customer.billingAddress).map((line:any, i:any) => <p key={i}>{line}</p>)}
+                                                    {formatAddress(customer.billingAddress).map((line: any, i: any) => <p key={i}>{line}</p>)}
                                                 </div>
                                             </div>
                                             <div className="mt-4">
                                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-display">Shipping Address</p>
                                                 <div className="text-sm">
-                                                    {formatAddress(customer.shippingAddress).map((line:any, i:any) => <p key={i}>{line}</p>)}
+                                                    {formatAddress(customer.shippingAddress).map((line: any, i: any) => <p key={i}>{line}</p>)}
                                                 </div>
                                             </div>
                                         </CollapsibleContent>
@@ -602,7 +615,7 @@ export default function CustomerProfilePage() {
                                         <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">To</h3>
                                         <div className="space-y-1">
                                             <p className="font-bold text-blue-600 text-lg leading-none mb-1">{customer.name}</p>
-                                            {formatAddress(customer.billingAddress).map((part:any, i:any) => <p key={i} className="text-sm text-slate-600">{part}</p>)}
+                                            {formatAddress(customer.billingAddress).map((part: any, i: any) => <p key={i} className="text-sm text-slate-600">{part}</p>)}
                                         </div>
                                     </div>
                                     <div className="bg-slate-50 p-6 rounded-sm border border-slate-100">

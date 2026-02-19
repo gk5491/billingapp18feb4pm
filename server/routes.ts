@@ -381,6 +381,7 @@ function syncSalesOrderStatus(invoiceId: string) {
         const anyPayment = linkedInvoices.some((inv: any) =>
           inv.status?.toUpperCase() === 'PAID' ||
           inv.status?.toUpperCase() === 'PARTIALLY_PAID' ||
+          inv.status?.toUpperCase() === 'PARTIALLY PAID' ||
           (inv.amountPaid > 0)
         );
 
@@ -752,7 +753,11 @@ export async function registerRoutes(
     readItemRequestsData,
     writeItemRequestsData,
     readItems,
-    writeItems
+    writeItems,
+    readSalesOrdersData,
+    writeSalesOrdersData,
+    readOrganizationsData,
+    writeOrganizationsData
   });
   app.use("/api/flow", flowRouter);
 
@@ -2580,7 +2585,7 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/sales-orders/:id/status", (req: Request, res: Response) => {
+  app.patch("/api/sales-orders/:id/status", async (req: Request, res: Response) => {
     try {
       const data = readSalesOrdersData();
       const orderIndex = data.salesOrders.findIndex((o: any) => o.id === req.params.id);
@@ -2591,12 +2596,17 @@ export async function registerRoutes(
 
       const now = new Date().toISOString();
       const existingOrder = data.salesOrders[orderIndex];
-      const newStatus = req.body.orderStatus;
+      const newStatus = req.body.orderStatus || req.body.status;
+
+      if (!newStatus) {
+        return res.status(400).json({ success: false, message: 'Status is required' });
+      }
 
       let actionDescription = `Status changed to ${newStatus}`;
 
       existingOrder.orderStatus = newStatus;
       existingOrder.updatedAt = now;
+      if (!existingOrder.activityLogs) existingOrder.activityLogs = [];
       existingOrder.activityLogs.push({
         id: String(existingOrder.activityLogs.length + 1),
         timestamp: now,
@@ -2608,13 +2618,44 @@ export async function registerRoutes(
       data.salesOrders[orderIndex] = existingOrder;
       writeSalesOrdersData(data);
 
+      // Trigger Email if status is 'Sent'
+      if (newStatus === 'Sent') {
+        const customersData = readCustomersData();
+        const customer = customersData.customers.find((c: any) => String(c.id) === String(existingOrder.customerId));
+
+        if (customer && customer.email) {
+          try {
+            await EmailTriggerService.createTrigger({
+              transactionType: 'sales_order',
+              transactionId: existingOrder.id,
+              customerId: customer.id,
+              recipients: [customer.email],
+              customSubject: `Sales Order ${existingOrder.salesOrderNumber} from ${readOrganizationsData().organizations[0]?.name || 'Our Company'}`,
+              customBody: `<p>Dear ${customer.displayName || customer.name},</p><p>Please find the Sales Order ${existingOrder.salesOrderNumber} for your review.</p>`,
+              sendMode: 'immediate'
+            }, { customer, transaction: existingOrder });
+          } catch (emailError) {
+            console.error("Failed to send sales order email:", emailError);
+          }
+        }
+      }
+
       res.json({ success: true, data: existingOrder });
     } catch (error) {
+      console.error("Error updating sales order status:", error);
       res.status(500).json({ success: false, message: 'Failed to update sales order status' });
     }
   });
 
-  app.post("/api/sales-orders/:id/convert-to-invoice", (req: Request, res: Response) => {
+  // Alias for frontend compatibility
+  app.post("/api/sales-orders/:id/generate-invoice", (req, res) => {
+    // Redirect to convert-to-invoice or replicate logic
+    // Frontend expects success and optional data
+    req.url = `/api/sales-orders/${req.params.id}/convert-to-invoice`;
+    app._router.handle(req, res);
+  });
+
+  app.post("/api/sales-orders/:id/convert-to-invoice", async (req: Request, res: Response) => {
     try {
       const salesOrderData = readSalesOrdersData();
       const invoiceData = readInvoicesData();
@@ -2708,8 +2749,29 @@ export async function registerRoutes(
       salesOrderData.salesOrders[orderIndex] = existingOrder;
       writeSalesOrdersData(salesOrderData);
 
+      // Send Invoice Email
+      const customersData = readCustomersData();
+      const customer = customersData.customers.find((c: any) => String(c.id) === String(existingOrder.customerId));
+
+      if (customer && customer.email) {
+        try {
+          await EmailTriggerService.createTrigger({
+            transactionType: 'invoice',
+            transactionId: newInvoice.id,
+            customerId: customer.id,
+            recipients: [customer.email],
+            customSubject: `Invoice ${newInvoice.invoiceNumber} from ${readOrganizationsData().organizations[0]?.name || 'Our Company'}`,
+            customBody: `<p>Dear ${customer.displayName || customer.name},</p><p>Please find the Invoice ${newInvoice.invoiceNumber} for your recent order.</p>`,
+            sendMode: 'immediate'
+          }, { customer, transaction: newInvoice });
+        } catch (emailError) {
+          console.error("Failed to send invoice email:", emailError);
+        }
+      }
+
       res.json({ success: true, data: { salesOrder: existingOrder, invoice: newInvoice } });
     } catch (error) {
+      console.error("Error converting to invoice:", error);
       res.status(500).json({ success: false, message: 'Failed to convert to invoice' });
     }
   });
@@ -3801,7 +3863,7 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/quotes/:id/send", (req: Request, res: Response) => {
+  app.patch("/api/quotes/:id/send", authenticate, async (req: Request, res: Response) => {
     try {
       const data = readQuotesData();
       const quoteIndex = data.quotes.findIndex((q: any) => q.id === req.params.id);
@@ -3815,6 +3877,7 @@ export async function registerRoutes(
 
       quote.status = 'Sent';
       quote.updatedAt = now;
+      if (!quote.activityLogs) quote.activityLogs = [];
       quote.activityLogs.push({
         id: String(quote.activityLogs.length + 1),
         timestamp: now,
@@ -3826,8 +3889,29 @@ export async function registerRoutes(
       data.quotes[quoteIndex] = quote;
       writeQuotesData(data);
 
+      // TRIGGER EMAIL
+      const customersData = readCustomersData();
+      const customer = customersData.customers.find((c: any) => String(c.id) === String(quote.customerId));
+
+      if (customer && customer.email) {
+        try {
+          await EmailTriggerService.createTrigger({
+            transactionType: 'estimate',
+            transactionId: quote.id,
+            customerId: customer.id,
+            recipients: [customer.email],
+            customSubject: `Quotation ${quote.quoteNumber} from ${readOrganizationsData().organizations[0]?.name || 'Our Company'}`,
+            customBody: `<p>Dear ${customer.displayName || customer.name},</p><p>Please find the Quotation ${quote.quoteNumber} for your review.</p>`,
+            sendMode: 'immediate'
+          }, { customer, transaction: quote });
+        } catch (emailError) {
+          console.error("Failed to send quote email:", emailError);
+        }
+      }
+
       res.json({ success: true, data: quote });
     } catch (error) {
+      console.error("Error sending quote:", error);
       res.status(500).json({ success: false, message: 'Failed to send quote' });
     }
   });
@@ -7022,10 +7106,62 @@ export async function registerRoutes(
       }
 
       paymentsReceivedData.paymentsReceived[paymentIndex].status = status;
-      // Also update verified fields if moving to Verified
-      if (status === 'Verified') {
-        paymentsReceivedData.paymentsReceived[paymentIndex].verifiedAt = new Date().toISOString();
-        paymentsReceivedData.paymentsReceived[paymentIndex].verifiedBy = "Admin";
+      const payment = paymentsReceivedData.paymentsReceived[paymentIndex];
+
+      // Also update verified fields if moving to Verified or Received
+      if (status === 'Verified' || status === 'Received') {
+        payment.verifiedAt = new Date().toISOString();
+        payment.verifiedBy = "Admin";
+
+        // BALANCE UPDATES
+        try {
+          const invoicesData = readInvoicesData();
+          if (payment.invoices && payment.invoices.length > 0) {
+            payment.invoices.forEach((invAlloc: any) => {
+              const invoiceId = invAlloc.id || invAlloc.invoiceId;
+              const invoiceIndex = invoicesData.invoices.findIndex((i: any) => i.id === invoiceId);
+              if (invoiceIndex !== -1) {
+                const invoice = invoicesData.invoices[invoiceIndex];
+                const amountPaid = Number(invAlloc.amountApplied || invAlloc.paymentAmount || 0);
+
+                // Current balance
+                let currentBalance = Number(invoice.balanceDue ?? invoice.total);
+                let newBalance = Math.max(0, currentBalance - amountPaid);
+
+                invoicesData.invoices[invoiceIndex].balanceDue = newBalance;
+
+                // Update Status
+                if (newBalance <= 0) {
+                  invoicesData.invoices[invoiceIndex].status = "Paid";
+                } else if (newBalance < Number(invoice.total)) {
+                  invoicesData.invoices[invoiceIndex].status = "Partially Paid";
+                }
+              }
+            });
+            writeInvoicesData(invoicesData);
+          }
+        } catch (err) {
+          console.error("Error updating invoice balances:", err);
+        }
+
+        // AUTOMATIC RECEIPT GENERATION
+        if (status === 'Received') {
+          try {
+            const receipt: any = {
+              paymentId: payment.id,
+              customerId: payment.customerId,
+              paymentNumber: payment.paymentNumber,
+              invoiceNumber: payment.invoices?.[0]?.invoiceNumber || null,
+              amount: payment.amount.toString(),
+              date: payment.date,
+              status: "received",
+              pdfUrl: null
+            };
+            await storage.addCustomerReceipt(receipt);
+          } catch (err) {
+            console.error("Error generating automatic receipt:", err);
+          }
+        }
       }
 
       writePaymentsReceivedData(paymentsReceivedData);
