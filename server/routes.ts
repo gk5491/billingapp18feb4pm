@@ -6638,40 +6638,38 @@ export async function registerRoutes(
       data.nextPaymentNumber++;
       writePaymentsReceivedData(data);
 
-    // Logic for updating invoice status and balance will be handled by admin verification
-    // For now, we just link the payment to the invoice without reducing the balance
-    // the actual reduction happens in the status update endpoint (/api/payments-received/:id/status)
-    if (invoices && Array.isArray(invoices)) {
-      const invoicesData = readInvoicesData();
-      let invoicesUpdated = false;
+      // Link payment to invoices but DON'T update balance yet (wait for verification)
+      if (req.body.invoices && Array.isArray(req.body.invoices)) {
+        const invoicesData = readInvoicesData();
+        let invoicesUpdated = false;
 
-      invoices.forEach((paymentInvoice: any) => {
-        const invoiceIndex = invoicesData.invoices.findIndex((inv: any) => inv.id === paymentInvoice.invoiceId);
-        if (invoiceIndex !== -1) {
-          const invoice = invoicesData.invoices[invoiceIndex];
-          
-          // Add payment record to invoice with 'Pending Verification' status
-          if (!invoice.payments) {
-            invoicesData.invoices[invoiceIndex].payments = [];
+        req.body.invoices.forEach((paymentInvoice: any) => {
+          const invoiceIndex = invoicesData.invoices.findIndex((inv: any) => inv.id === paymentInvoice.invoiceId);
+          if (invoiceIndex !== -1) {
+            const invoice = invoicesData.invoices[invoiceIndex];
+            
+            // Add payment record to invoice with 'Pending' status
+            if (!invoice.payments) {
+              invoicesData.invoices[invoiceIndex].payments = [];
+            }
+            invoicesData.invoices[invoiceIndex].payments.push({
+              id: newPayment.id,
+              date: paymentInvoice.paymentReceivedDate || req.body.date,
+              amount: Number(paymentInvoice.paymentAmount || 0),
+              paymentMode: req.body.mode || 'Cash',
+              reference: req.body.referenceNumber || '',
+              notes: req.body.notes || '',
+              status: 'Pending'
+            });
+
+            invoicesUpdated = true;
           }
-          invoicesData.invoices[invoiceIndex].payments.push({
-            id: newPayment.id,
-            date: paymentInvoice.paymentReceivedDate || req.body.date,
-            amount: Number(paymentInvoice.paymentAmount || 0),
-            paymentMode: req.body.mode || 'Cash',
-            reference: req.body.referenceNumber || '',
-            notes: req.body.notes || '',
-            status: 'Pending Verification'
-          });
+        });
 
-          invoicesUpdated = true;
+        if (invoicesUpdated) {
+          writeInvoicesData(invoicesData);
         }
-      });
-
-      if (invoicesUpdated) {
-        writeInvoicesData(invoicesData);
       }
-    }
 
       res.json({ success: true, data: newPayment });
     } catch (error) {
